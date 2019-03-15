@@ -30,8 +30,8 @@ printf 'runtime = %02dh:%02dm:%02ds\n' $(($secs/3600)) $(($secs%3600/60)) $(($se
 rspec ./spec/Dockerfile_$IMAGE_NAME.rb
 
 # push images
-docker push $DOCKER_USERNAME/$PACKAGE:$PACKAGE_VERSION-$IMAGE_NAME-$(date -u '+%Y%m%d');
-docker push $DOCKER_USERNAME/$PACKAGE:$PACKAGE_VERSION-$IMAGE_NAME;
+docker push $DOCKER_USERNAME/$PACKAGE:$PACKAGE_VERSION-$IMAGE_NAME-$(date -u '+%Y%m%d')
+docker push $DOCKER_USERNAME/$PACKAGE:$PACKAGE_VERSION-$IMAGE_NAME
 
 end=`date +%s`
 secs=$((end-start))
