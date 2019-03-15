@@ -13,6 +13,8 @@ docker image rmi $DOCKER_USERNAME/$PACKAGE:$PACKAGE_VERSION -f  || true
 docker image rmi $DOCKER_USERNAME/$PACKAGE -f  || true
 docker container rm default -f || true
 
+
+
 # run Packer
 packer validate packer_docker.json
 packer inspect packer_docker.json
@@ -21,6 +23,8 @@ packer build packer_docker.json
 end=`date +%s`
 secs=$((end-start))
 printf 'runtime = %02dh:%02dm:%02ds\n' $(($secs/3600)) $(($secs%3600/60)) $(($secs%60))
+
+
 
 # test the Docker image w/ Serverspec
 rspec ./spec/Dockerfile_$DOCKER_BASE_IMAGE.rb
