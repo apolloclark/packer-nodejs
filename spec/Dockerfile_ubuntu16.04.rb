@@ -30,7 +30,7 @@ describe "Dockerfile" do
 
 
 
-  it "installs the right version of Centos" do
+  it "installs the right version of Ubuntu" do
     expect(os_version).to include("Ubuntu")
     expect(os_version).to include("16.04")
   end
@@ -43,6 +43,6 @@ describe "Dockerfile" do
   # packages
   describe package(ENV['PACKAGE']) do
     it { should be_installed }
-    its('version') { should eq "11.11.0-1nodesource1" }
+    #its('version') { should eq ENV['PACKAGE_VERSION']+"*" }
   end
 end

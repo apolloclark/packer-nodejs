@@ -43,6 +43,6 @@ describe "Dockerfile" do
   # packages
   describe package(ENV['PACKAGE']) do
     it { should be_installed }
-    its('version') { should eq "11.11.0-1nodesource" }
+    #its('version') { should contain ENV['PACKAGE_VERSION'] }
   end
 end
