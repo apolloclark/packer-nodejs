@@ -9,6 +9,6 @@ build
 .project
 .pyproject
 .pydevproject
-.gradle
 .vagrant
 *.retry
+tmp
