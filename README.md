@@ -1,11 +1,12 @@
 # packer-nodejs
 
-Packer, Ansible, Serverspec, project to create a Node.js Docker images.
+Packer, Ansible, Serverspec, project to create a Node.js Docker image.
 
 ## Requirements
 
 - Packer
 - Ansible
+- Ruby
 - [Serverspec](https://serverspec.org/): gem install serverspec
 - [docker-api](https://github.com/swipely/docker-api/releases): gem install docker-api
 
@@ -17,8 +18,12 @@ cd ./packer-nodejs
 # set your Docker hub username
 export DOCKER_USERNAME="apolloclark" # $(whoami)
 
-# ./all.sh
-./build_packer_docker.sh
+# build both the Ubuntu 16.04 and Centos 7.6 images
+./build_packer_docker_all.sh
+
+# (optional) build images using Gradle
+cd ./gradle
+gradle testJRuby --parallel
 ```
 
 ## Build Details

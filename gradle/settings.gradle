@@ -8,3 +8,4 @@
  */
 
 rootProject.name = 'packer-nodejs'
+include ':centos7.6', ':ubuntu16.04'
