@@ -11,6 +11,7 @@ Packer, Ansible, Serverspec, project to create a Node.js Docker image.
 - [docker-api](https://github.com/swipely/docker-api/releases): gem install docker-api
 
 ## Install
+
 ```shell
 git clone https://github.com/apolloclark/packer-nodejs
 cd ./packer-nodejs

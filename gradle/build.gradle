@@ -54,6 +54,9 @@ subprojects {
 	afterEvaluate { Project project ->
 		task('clean') { //, type: GradleBuild) {
 			description = 'Clean any previously built images and containers.'
+			inputs.property "build_date", "$project.build_date"
+			inputs.property "package_version", "$project.package_version"
+
 			// tasks = ['cleanImage','cleanImageDate','cleanContainer']
 			dependsOn 'cleanImage'
 			dependsOn 'cleanImageDate'
@@ -61,31 +64,37 @@ subprojects {
 		}
 		task('cleanImage', type: DockerRemoveImage) {
 			description = 'Clean any previously built images.'
+			inputs.property "build_date", "$project.build_date"
+			inputs.property "package_version", "$project.package_version"
+
 			targetImageId "$docker_username/$package_name:$package_version-${project.image_name}"
 			force = true
 			onError { exception ->
-				// Ignore exception if container does not exist otherwise throw it
 				if (!exception.message.contains('No such image'))
 					throw exception
 			}
 		}
 		task('cleanImageDate', type: DockerRemoveImage) {
 			description = 'Clean any previously built images.'
+			inputs.property "build_date", "$project.build_date"
+			inputs.property "package_version", "$project.package_version"
+
 			targetImageId "$docker_username/$package_name:$package_version-${project.image_name}-$build_date"
 			force = true
 			onError { exception ->
-				// Ignore exception if container does not exist otherwise throw it
 				if (!exception.message.contains('No such image'))
 					throw exception
 			}
 		}
 		task('cleanContainer', type: DockerRemoveContainer) {
 			description = 'Clean any previously built containers.'
+			inputs.property "build_date", "$project.build_date"
+			inputs.property "package_version", "$project.package_version"
+
 			targetContainerId "$package_name-${project.image_name}"
 			force = true
 			removeVolumes = true
 			onError { exception ->
-				// Ignore exception if container does not exist otherwise throw it
 				if (!exception.message.contains('No such container'))
 					throw exception
 			}
@@ -93,6 +102,12 @@ subprojects {
 		task('build', type: PackerBuilder) {
 			description = 'Build the Docker image.'
 			dependsOn 'clean'
+			inputs.property "build_date", "$project.build_date"
+			inputs.property "package_version", "$project.package_version"
+			inputs.file '../../packer_docker.json'
+			inputs.files fileTree(dir: "../../scripts")
+			inputs.files fileTree(dir: "../../files")
+			inputs.files fileTree(dir: "../../ansible", includes: ['**/*.yml'])
 		
 			setEnvironment System.getenv()
 			environment DOCKER_USERNAME : "$docker_username"
@@ -100,28 +115,30 @@ subprojects {
 			environment PACKAGE_VERSION : "$package_version"
 			environment BASE_IMAGE      : "${project.base_image}"
 			environment IMAGE_NAME      : "${project.image_name}"
-		
+
 			force true
 			parallel true
 			buildDir = '../../'
-			template  '../../packer_docker.json'
+			template '../../packer_docker.json'
 			outputDir "${buildDir}"
-			// outputs.file "manifest.json"
+			outputs.file "manifest.json"
 		}
 		// http://jruby-gradle.org/base/#tasks
 		// https://docs.gradle.org/current/dsl/org.gradle.api.tasks.JavaExec.html
 		task('testJRuby', type: JRubyExec) {
 			description = 'Test the Docker image.'
 			dependsOn 'build'
-			// jruby 9.2.7.0
-		
+			inputs.property "build_date", "$project.build_date"
+			inputs.property "package_version", "$project.package_version"
+			inputs.file "manifest.json"
+			inputs.files fileTree(dir: "../../spec", includes: ['**/.rb'])
+
 			setEnvironment System.getenv()
 			environment DOCKER_USERNAME : "$docker_username"
 			environment PACKAGE         : "$package_name"
 			environment PACKAGE_VERSION : "$package_version"
 			environment IMAGE_NAME      : "${project.image_name}"
-		
-			// jrubyArgs '-S'
+
 			workingDir '../../spec/'
 			script "rspec"
 			scriptArgs "Dockerfile_${project.image_name}.rb"
@@ -130,7 +147,7 @@ subprojects {
 		task('testExec', type: Exec) {
 			description = 'Test the Docker image.'
 			// dependsOn 'build'
-		
+
 			setEnvironment System.getenv()
 			environment DOCKER_USERNAME : "$docker_username"
 			environment PACKAGE         : "$package_name"
