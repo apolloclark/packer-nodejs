@@ -12,3 +12,4 @@ build
 .vagrant
 *.retry
 tmp
+manifest.json
