@@ -39,10 +39,13 @@ describe "Dockerfile" do
     expect(sys_user).to eql("root")
   end
 
-
   # packages
   describe package(ENV['PACKAGE']) do
-    it { should be_installed }
-    #its('version') { should contain ENV['PACKAGE_VERSION'] }
+    it { should be_installed.with_version(ENV['PACKAGE_VERSION']) }
+  end
+
+  describe command("node --version") do
+    its(:exit_status) { should eq 0 }
+    its(:stdout) { should contain ENV['PACKAGE_VERSION'] }
   end
 end

@@ -30,6 +30,6 @@ gradle testJRuby --parallel
 ## Build Details
 
 ```shell
-node.js, 11.11.0, 2019-03-05
+node.js, 12.4.0, 2019-06-04
 https://nodejs.org/en/download/releases/
 ```
