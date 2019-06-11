@@ -15,13 +15,10 @@ plugins {
 
 // Import task types
 import org.ysb33r.gradle.packer.tasks.*
+import com.bmuschko.gradle.docker.tasks.*
 import com.bmuschko.gradle.docker.tasks.image.*
 import com.bmuschko.gradle.docker.tasks.container.*
 import com.github.jrubygradle.JRubyExec
-
-packer {
-    executable path : '/home/apollo/bin/packer'
-}
 
 allprojects {
 	apply plugin: 'org.ysb33r.packer.base'
@@ -41,21 +38,31 @@ allprojects {
 
 ext.docker_username = "apolloclark"
 ext.package_name    = "nodejs"
-ext.package_version = "11"
+ext.package_version = "12.4.0"
 ext.base_image      = "default"
 ext.image_name      = "default"
 ext.build_date      = new Date().format("yyyyMMdd", TimeZone.getTimeZone('UTC'))
 
 
 
+task('info', type: DockerInfo){
+	
+}
+
 // create dynamic reusable code
 subprojects {
 	// enable the use of sub-project variables
 	afterEvaluate { Project project ->
+		docker {
+			registryCredentials {
+				url = 'https://index.docker.io/v1/'
+				username = 'apolloclark'
+				email = 'apolloclark@gmail.com'
+				password = System.getenv('DOCKER_PASS')
+			}
+		}
 		task('clean') { //, type: GradleBuild) {
 			description = 'Clean any previously built images and containers.'
-			inputs.property "build_date", "$project.build_date"
-			inputs.property "package_version", "$project.package_version"
 
 			// tasks = ['cleanImage','cleanImageDate','cleanContainer']
 			dependsOn 'cleanImage'
@@ -64,8 +71,6 @@ subprojects {
 		}
 		task('cleanImage', type: DockerRemoveImage) {
 			description = 'Clean any previously built images.'
-			inputs.property "build_date", "$project.build_date"
-			inputs.property "package_version", "$project.package_version"
 
 			targetImageId "$docker_username/$package_name:$package_version-${project.image_name}"
 			force = true
@@ -101,9 +106,7 @@ subprojects {
 		}
 		task('build', type: PackerBuilder) {
 			description = 'Build the Docker image.'
-			dependsOn 'clean'
-			inputs.property "build_date", "$project.build_date"
-			inputs.property "package_version", "$project.package_version"
+			// dependsOn 'clean'
 			inputs.file '../../packer_docker.json'
 			inputs.files fileTree(dir: "../../scripts")
 			inputs.files fileTree(dir: "../../files")
@@ -128,9 +131,7 @@ subprojects {
 		task('testJRuby', type: JRubyExec) {
 			description = 'Test the Docker image.'
 			dependsOn 'build'
-			inputs.property "build_date", "$project.build_date"
-			inputs.property "package_version", "$project.package_version"
-			inputs.file "manifest.json"
+			inputs.file "../../manifest.json"
 			inputs.files fileTree(dir: "../../spec", includes: ['**/.rb'])
 
 			setEnvironment System.getenv()
@@ -157,6 +158,27 @@ subprojects {
 			workingDir '../../spec/'
 			executable "rspec"
 			args = ["Dockerfile_${project.image_name}.rb"]
+		}
+		task('push') {
+			description = 'Clean any previously built images and containers.'
+
+			dependsOn 'pushImage'
+			dependsOn 'pushImageDate'
+		}
+		task('pushImage', type: DockerPushImage) {
+			description = 'Clean any previously built images.'
+			dependsOn 'testJRuby'
+
+			imageName = "$docker_username/$package_name"
+			tag = "$package_version-${project.image_name}"
+
+		}
+		task('pushImageDate', type: DockerPushImage) {
+			description = 'Clean any previously built images.'
+			dependsOn 'testJRuby'
+
+			imageName = "$docker_username/$package_name"
+			tag = "$package_version-${project.image_name}-$build_date"
 		}
 	}
 }
