@@ -8,7 +8,10 @@ Docker.validate_version!
 describe "Dockerfile" do
   before(:all) do
     image = Docker::Image.get(
-      ENV['DOCKER_USERNAME'] + "/" + ENV['PACKAGE'] + ":" + ENV['PACKAGE_VERSION'] + "-" + ENV['IMAGE_NAME']
+      ENV['DOCKER_USERNAME'] + "/" + \
+      ENV['PACKAGE_NAME'] + ":" + \
+      ENV['PACKAGE_VERSION'] + "-" + \
+      ENV['IMAGE_NAME']
     )
 
     # https://github.com/mizzy/specinfra
@@ -40,7 +43,7 @@ describe "Dockerfile" do
   end
 
   # packages
-  describe package(ENV['PACKAGE']) do
+  describe package(ENV['PACKAGE_NAME']) do
     it { should be_installed.with_version(ENV['PACKAGE_VERSION']) }
   end
 

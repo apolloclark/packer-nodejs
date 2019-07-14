@@ -3,4 +3,5 @@
 hostname: all
 
 # geerlingguy.nodejs
+nodejs_repo_version: "12.x"
 nodejs_version: "12.x"
