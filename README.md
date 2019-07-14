@@ -29,6 +29,12 @@ export DOCKER_PASSWORD=""
 
 
 
+# clean up ALL previous builds
+./clean_packer_docker.sh
+
+# Gradle, clean up previous builds, from today
+gradle clean --parallel --project-dir gradle-build
+
 # Gradle, build all images, in parallel
 gradle test --parallel --project-dir gradle-build
 
@@ -44,12 +50,6 @@ gradle centos7:test --project-dir gradle-build
 gradle ubuntu18.04:test --rerun-tasks --project-dir gradle-build
 gradle ubuntu16.04:test --rerun-tasks --project-dir gradle-build
 gradle centos7:test --rerun-tasks --project-dir gradle-build
-
-# Gradle, clean up previous builds, from today
-gradle clean --parallel --project-dir gradle-build
-
-# clean up ALL previous builds
-./clean_packer_docker.sh
 
 
 
@@ -72,6 +72,6 @@ rm -rf ~/.gradle
 ## Build Details
 
 ```shell
-node.js, 12.4.0, 2019-06-04
+node.js, 12.6.0, 2019-07-03
 https://nodejs.org/en/download/releases/
 ```
