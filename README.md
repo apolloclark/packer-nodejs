@@ -51,8 +51,6 @@ gradle ubuntu18.04:test --rerun-tasks --project-dir gradle-build
 gradle ubuntu16.04:test --rerun-tasks --project-dir gradle-build
 gradle centos7:test --rerun-tasks --project-dir gradle-build
 
-
-
 # Gradle, list tasks, and dependency graph
 gradle tasks --project-dir gradle-build
 gradle tasks --all --project-dir gradle-build
