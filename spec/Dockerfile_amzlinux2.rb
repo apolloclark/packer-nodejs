@@ -25,7 +25,7 @@ describe "Dockerfile" do
     # https://docs.docker.com/engine/api/v1.24/#31-containers
     # https://github.com/swipely/docker-api
     # https://serverspec.org/resource_types.html
-    set :os, family: :debian
+    set :os, family: :redhat
     set :backend, :docker
     set :docker_image, image.id
   end
@@ -40,9 +40,9 @@ describe "Dockerfile" do
 
 
 
-  it "runs the right version of Ubuntu" do
-    expect(os_version).to include("Ubuntu")
-    expect(os_version).to include("16.04")
+  it "runs the right version of Amazon Linux" do
+    expect(os_version).to include("Amazon Linux")
+    expect(os_version).to include("Linux 2")
   end
 
   it "runs as root" do
@@ -51,7 +51,7 @@ describe "Dockerfile" do
 
   # packages
   describe package(ENV['PACKAGE_NAME']) do
-    it { should be_installed.with_version(ENV['PACKAGE_VERSION'] + '-1nodesource1') }
+    it { should be_installed.with_version(ENV['PACKAGE_VERSION']) }
   end
 
   describe command("node --version") do

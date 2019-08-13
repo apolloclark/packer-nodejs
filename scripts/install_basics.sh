@@ -6,9 +6,11 @@ if [ -x "$(command -v apt-get)" ]; then
     apt-get upgrade -yq
     apt-get install -yq aptitude software-properties-common python-minimal \
       nano curl wget git gnupg2 apt-transport-https
+    python --version
 elif [ -x "$(command -v dnf)" ]; then
     dnf makecache
-    dnf --assumeyes install which nano curl wget git gnupg2 initscripts hostname python3
+    dnf --assumeyes install which nano curl wget git gnupg2 initscripts \
+        hostname python3
     dnf clean all
     alternatives --set python /usr/bin/python3
     python --version
